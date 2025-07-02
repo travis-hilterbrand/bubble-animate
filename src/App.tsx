@@ -39,31 +39,48 @@ const Right = styled.div`
 
 export const App = () => {
   const [id, setId] = useState(2);
+  // order is oldest to newest
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { id: "1", message: randomString(64) },
   ]);
 
+  const showTime = useRef(new Date());
+  const resetShowTime = () => {
+    showTime.current = new Date();
+  };
+
   const addNewMessage = () => {
     if (!chatMessages.length) {
-      showTime.current = new Date();
+      resetShowTime();
     }
 
     setChatMessages((prev) => {
       const newMessages = [...prev, { id: `${id}`, message: randomString(64) }];
-      return newMessages.slice(-3);
+      return newMessages.slice(-4);
     });
     setId((prev) => prev + 1);
   };
   const removeMessageStart = (id: string) => {
     setFadeOutId(id);
-    showTime.current = new Date();
   };
-  const removeMessageEnd = (id: string) => {
-    const newMessages = chatMessages.filter((item) => item.id !== id);
+  const removeMessageEnd = (ids: string[]) => {
+    console.info(`remove message(${id})`);
+    const newMessages = chatMessages.filter((item) => !ids.includes(item.id));
     setChatMessages(newMessages);
   };
 
-  const showTime = useRef(new Date());
+  const handleCloseClick = (id: string) => {
+    const index = chatMessages.findIndex((item) => item.id === id);
+    if (chatMessages[index]) {
+      const messagesToRemove = chatMessages
+        .slice(0, index + 1)
+        .map((item) => item.id);
+      console.info(`remove multiple`, messagesToRemove);
+      removeMessageEnd(messagesToRemove);
+    }
+    resetShowTime();
+  };
+
   const [fadeOutId, setFadeOutId] = useState("");
   useEffect(() => {
     const timerId = setInterval(() => {
@@ -107,12 +124,13 @@ export const App = () => {
       </Panel>
       <hr />
       <ChatWall
-        chatMessages={chatMessages}
+        chatMessages={[...chatMessages].reverse()}
         fadeOutId={fadeOutId}
         jiggle={jiggle}
-        onClose={removeMessageStart}
+        onClose={handleCloseClick}
         onFadeOutComplete={(id) => {
-          removeMessageEnd(id);
+          removeMessageEnd([id]);
+          resetShowTime();
         }}
       />
       <BottomPanel>
