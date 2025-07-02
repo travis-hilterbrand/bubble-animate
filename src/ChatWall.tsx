@@ -15,14 +15,28 @@ const Container = styled.div`
   gap: 8px;
 `;
 
-export type ChatWallProps = Pick<ChatBubbleProps, "jiggle" | "onClose"> & {
+export type ChatWallProps = Pick<
+  ChatBubbleProps,
+  "jiggle" | "onClose" | "onFadeOutComplete"
+> & {
   chatMessages: ChatMessage[];
+  fadeOutId: string;
 };
-export const ChatWall = ({ chatMessages, ...rest }: ChatWallProps) => {
+export const ChatWall = ({
+  chatMessages,
+  fadeOutId,
+  ...rest
+}: ChatWallProps) => {
   return (
     <Container>
       {chatMessages.map((item) => (
-        <ChatBubble key={item.id} animate chatMessage={item} {...rest} />
+        <ChatBubble
+          key={item.id}
+          animate
+          chatMessage={item}
+          fadeOut={item.id === fadeOutId}
+          {...rest}
+        />
       ))}
     </Container>
   );

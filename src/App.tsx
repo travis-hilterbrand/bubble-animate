@@ -54,18 +54,22 @@ export const App = () => {
     });
     setId((prev) => prev + 1);
   };
-  const removeMessage = (id: string) => {
+  const removeMessageStart = (id: string) => {
+    setFadeOutId(id);
+    showTime.current = new Date();
+  };
+  const removeMessageEnd = (id: string) => {
     const newMessages = chatMessages.filter((item) => item.id !== id);
     setChatMessages(newMessages);
   };
 
   const showTime = useRef(new Date());
+  const [fadeOutId, setFadeOutId] = useState("");
   useEffect(() => {
     const timerId = setInterval(() => {
       if (new Date().getTime() > showTime.current.getTime() + 5000) {
         if (chatMessages.length) {
-          removeMessage(chatMessages[0].id);
-          showTime.current = new Date();
+          removeMessageStart(chatMessages[0].id);
         }
       }
     }, 150);
@@ -93,17 +97,23 @@ export const App = () => {
         <Right>
           <ChatBubble
             animate={false}
+            fadeOut={false}
             jiggle={false}
             chatMessage={{ id: "test", message: "My chat bubble" }}
             onClose={() => {}}
+            onFadeOutComplete={() => {}}
           />
         </Right>
       </Panel>
       <hr />
       <ChatWall
         chatMessages={chatMessages}
+        fadeOutId={fadeOutId}
         jiggle={jiggle}
-        onClose={removeMessage}
+        onClose={removeMessageStart}
+        onFadeOutComplete={(id) => {
+          removeMessageEnd(id);
+        }}
       />
       <BottomPanel>
         <Input>
