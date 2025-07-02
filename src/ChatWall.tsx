@@ -3,8 +3,15 @@ import type { ChatMessage } from "./types";
 import { ChatBubble } from "./ChatBubble";
 
 const Container = styled.div`
+  position: fixed;
+  width: 200px;
+  bottom: 100px;
+  top: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
+  align-items: flex-end;
   gap: 8px;
 `;
 
@@ -16,7 +23,12 @@ export const ChatWall = ({ chatMessages, onClose }: ChatWallProps) => {
   return (
     <Container>
       {chatMessages.map((item) => (
-        <ChatBubble key={item.id} chatMessage={item} onClose={onClose} />
+        <ChatBubble
+          key={item.id}
+          animate
+          chatMessage={item}
+          onClose={onClose}
+        />
       ))}
     </Container>
   );
