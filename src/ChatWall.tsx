@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import type { ChatMessage } from "./types";
-import { ChatBubble } from "./ChatBubble";
+import { ChatBubble, type ChatBubbleProps } from "./ChatBubble";
 
 const Container = styled.div`
   position: fixed;
@@ -15,20 +15,14 @@ const Container = styled.div`
   gap: 8px;
 `;
 
-export type ChatWallProps = {
+export type ChatWallProps = Pick<ChatBubbleProps, "jiggle" | "onClose"> & {
   chatMessages: ChatMessage[];
-  onClose: (id: string) => void;
 };
-export const ChatWall = ({ chatMessages, onClose }: ChatWallProps) => {
+export const ChatWall = ({ chatMessages, ...rest }: ChatWallProps) => {
   return (
     <Container>
       {chatMessages.map((item) => (
-        <ChatBubble
-          key={item.id}
-          animate
-          chatMessage={item}
-          onClose={onClose}
-        />
+        <ChatBubble key={item.id} animate chatMessage={item} {...rest} />
       ))}
     </Container>
   );

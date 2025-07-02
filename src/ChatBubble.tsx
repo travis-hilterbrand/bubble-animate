@@ -1,6 +1,11 @@
 import styled from "styled-components";
+import { useEffect, useMemo, useState } from "react";
 import type { ChatMessage } from "./types";
-import { useEffect, useState } from "react";
+
+const FADE_IN = "fadeInBubble 500ms cubic-bezier(0.4, 1, 0.6, 1) forwards";
+const FADE_IN_JIGGLE =
+  "fadeInBubble 1.2s cubic-bezier(0.4, 2, 0.6, 1) forwards";
+//const FADE_OUT = "fadeOutBubble 300ms linear forwards";
 
 const Container = styled.div<{ $animate: boolean }>`
   box-shadow: 0px 6px 24px rgba(16, 16, 23, 0.08);
@@ -14,57 +19,64 @@ const Container = styled.div<{ $animate: boolean }>`
   overflow: hidden;
   text-overflow: ellipsis;
   flex-shrink: 0;
+  cursor: pointer;
 
   ${(props) =>
     props.$animate &&
     `
-  /*animation: fadeInBubble 1.2s cubic-bezier(0.4, 2, 0.6, 1) forwards;*/
-  animation: fadeInBubble 350ms linear forwards;
-  opacity: 0;
+    opacity: 0;
 
-  @keyframes fadeInBubble {
-    from {
-      opacity: 0;
-      transform: translateY(40px);
+    @keyframes fadeInBubble {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0px);
+      }
     }
-    to {
-      opacity: 1;
-      transform: translateY(0px);
+    @keyframes fadeOutBubble {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
     }
-  }
-      `}
+`}
 `;
 
 export type ChatBubbleProps = {
   animate: boolean;
   chatMessage: ChatMessage;
+  jiggle: boolean;
   onClose: (id: string) => void;
 };
 export const ChatBubble = (props: ChatBubbleProps) => {
-  const { animate, chatMessage, onClose } = props;
-
-  const [id] = useState(chatMessage.id);
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      onClose(id);
-    }, 5 * 1000);
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [id, onClose]);
+  const { animate, chatMessage, jiggle, onClose } = props;
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     setVisible(true);
   }, []);
 
+  const animation: string = useMemo(() => {
+    if (animate) {
+      return jiggle ? FADE_IN_JIGGLE : FADE_IN;
+    }
+    return "";
+  }, [animate, jiggle]);
+
   return (
     <Container
       $animate={animate}
       data-id={chatMessage.id}
       style={{
+        animation,
         opacity: visible ? 1 : 0,
       }}
+      onClick={() => onClose(chatMessage.id)}
     >
       {`${chatMessage.id} - ${chatMessage.message}`}
     </Container>

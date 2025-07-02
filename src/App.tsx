@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import type { ChatMessage } from "./types";
 import { ChatWall } from "./ChatWall";
@@ -26,6 +26,10 @@ const Input = styled.div`
   width: 800px;
   background: white;
   border-radius: 16px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 `;
 const Right = styled.div`
   display: grid;
@@ -39,26 +43,57 @@ export const App = () => {
     { id: "1", message: randomString(64) },
   ]);
 
+  const addNewMessage = () => {
+    if (!chatMessages.length) {
+      showTime.current = new Date();
+    }
+
+    setChatMessages((prev) => {
+      const newMessages = [...prev, { id: `${id}`, message: randomString(64) }];
+      return newMessages.slice(-3);
+    });
+    setId((prev) => prev + 1);
+  };
+  const removeMessage = (id: string) => {
+    const newMessages = chatMessages.filter((item) => item.id !== id);
+    setChatMessages(newMessages);
+  };
+
+  const showTime = useRef(new Date());
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      if (new Date().getTime() > showTime.current.getTime() + 5000) {
+        if (chatMessages.length) {
+          removeMessage(chatMessages[0].id);
+          showTime.current = new Date();
+        }
+      }
+    }, 150);
+    return () => {
+      clearInterval(timerId);
+    };
+  });
+
+  const [jiggle, setJiggle] = useState(false);
+
   return (
     <div>
-      Tester
+      Bubble tester
       <Panel>
         <div>
-          <button
-            onClick={() => {
-              setChatMessages([
-                ...chatMessages,
-                { id: `${id}`, message: randomString(64) },
-              ]);
-              setId((prev) => prev + 1);
-            }}
-          >
-            Add message
-          </button>
+          <label>
+            <input
+              type="checkbox"
+              checked={jiggle}
+              onChange={() => setJiggle((prev) => !prev)}
+            />
+            Jiggle
+          </label>
         </div>
         <Right>
           <ChatBubble
             animate={false}
+            jiggle={false}
             chatMessage={{ id: "test", message: "My chat bubble" }}
             onClose={() => {}}
           />
@@ -67,13 +102,13 @@ export const App = () => {
       <hr />
       <ChatWall
         chatMessages={chatMessages}
-        onClose={(id) => {
-          const newMessages = chatMessages.filter((item) => item.id !== id);
-          setChatMessages(newMessages);
-        }}
+        jiggle={jiggle}
+        onClose={removeMessage}
       />
       <BottomPanel>
-        <Input />
+        <Input>
+          <button onClick={() => addNewMessage()}>Add message</button>
+        </Input>
       </BottomPanel>
     </div>
   );
