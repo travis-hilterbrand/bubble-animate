@@ -95,7 +95,7 @@ export const App = () => {
     };
   });
 
-  const [jiggle, setJiggle] = useState(false);
+  const [jiggle, setJiggle] = useState(true);
 
   return (
     <div>
