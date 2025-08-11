@@ -27,7 +27,7 @@ const Container = styled.div`
 
 export type ChatWallProps = Pick<
   ChatBubbleProps,
-  "jiggle" | "onClose" | "onFadeOutComplete"
+  "onClose" | "onFadeOutComplete"
 > & {
   chatMessages: ChatMessage[];
   fadeOutId: string;

@@ -94,27 +94,15 @@ export const App = () => {
     };
   });
 
-  const [jiggle, setJiggle] = useState(false);
-
   return (
     <div>
       Bubble tester
       <Panel>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={jiggle}
-              onChange={() => setJiggle((prev) => !prev)}
-            />
-            Jiggle
-          </label>
-        </div>
+        <div></div>
         <Right>
           <ChatBubble
             animate={false}
             fadeOut={false}
-            jiggle={false}
             chatMessage={{ id: "test", message: "My chat bubble" }}
             onClose={() => {}}
             onFadeOutComplete={() => {}}
@@ -125,7 +113,6 @@ export const App = () => {
       <ChatWall
         chatMessages={[...chatMessages].reverse()}
         fadeOutId={fadeOutMessages[0]}
-        jiggle={jiggle}
         onClose={handleCloseClick}
         onFadeOutComplete={(id) => {
           const newFadeOutMessages = [...fadeOutMessages];
