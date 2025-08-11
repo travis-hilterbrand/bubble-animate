@@ -49,6 +49,7 @@ export const App = () => {
     showTime.current = new Date();
   };
 
+  const [fadeOutMessages, setFadeOutMessages] = useState<string[]>([]);
   const addNewMessage = () => {
     if (!chatMessages.length) {
       resetShowTime();
@@ -60,12 +61,8 @@ export const App = () => {
     });
     setId((prev) => prev + 1);
   };
-  const removeMessageStart = (id: string) => {
-    console.info(`removeMessageStart(${id})`);
-    setFadeOutId(id);
-  };
-  const removeMessageEnd = (ids: string[]) => {
-    console.info(`removeMessageEnd(${ids})`);
+  const removeMessages = (ids: string[]) => {
+    console.info(`removeMessages(${ids})`);
     const newMessages = chatMessages.filter((item) => !ids.includes(item.id));
     setChatMessages(newMessages);
   };
@@ -76,22 +73,19 @@ export const App = () => {
       const messagesToRemove = chatMessages
         .slice(0, index + 1)
         .map((item) => item.id);
-      if (messagesToRemove.length > 1) {
-        console.info(`remove multiple`, messagesToRemove);
-        removeMessageEnd(messagesToRemove);
-      } else {
-        removeMessageStart(messagesToRemove[0]);
+      if (messagesToRemove.length > 0) {
+        setFadeOutMessages(messagesToRemove);
       }
     }
     resetShowTime();
   };
 
-  const [fadeOutId, setFadeOutId] = useState("");
   useEffect(() => {
     const timerId = setInterval(() => {
       if (new Date().getTime() > showTime.current.getTime() + 5000) {
-        if (chatMessages.length) {
-          removeMessageStart(chatMessages[0].id);
+        if (chatMessages.length && fadeOutMessages.length === 0) {
+          setFadeOutMessages([chatMessages[0].id]);
+          resetShowTime();
         }
       }
     }, 150);
@@ -130,11 +124,15 @@ export const App = () => {
       <hr />
       <ChatWall
         chatMessages={[...chatMessages].reverse()}
-        fadeOutId={fadeOutId}
+        fadeOutId={fadeOutMessages[0]}
         jiggle={jiggle}
         onClose={handleCloseClick}
         onFadeOutComplete={(id) => {
-          removeMessageEnd([id]);
+          const newFadeOutMessages = [...fadeOutMessages];
+          newFadeOutMessages.shift();
+          setFadeOutMessages(newFadeOutMessages);
+
+          removeMessages([id]);
           resetShowTime();
         }}
       />

@@ -2,10 +2,11 @@ import styled from "styled-components";
 import { useEffect, useMemo, useState } from "react";
 import type { ChatMessage } from "./types";
 
+const FADE_OUT_TIME = 300;
 const FADE_IN = "fadeInBubble 500ms cubic-bezier(0.4, 1, 0.6, 1) forwards";
 const FADE_IN_JIGGLE =
   "fadeInBubble 1.2s cubic-bezier(0.4, 2, 0.6, 1) forwards";
-const FADE_OUT = "fadeOutBubble 300ms linear forwards";
+const FADE_OUT = `fadeOutBubble ${FADE_OUT_TIME}ms linear forwards`;
 
 const Container = styled.div<{ $animate: boolean }>`
   box-shadow: 0px 6px 24px rgba(16, 16, 23, 0.08);
@@ -78,7 +79,7 @@ export const ChatBubble = (props: ChatBubbleProps) => {
     if (fadeOut) {
       timerId = setTimeout(() => {
         onFadeOutComplete(id);
-      }, 450);
+      }, FADE_OUT_TIME);
     }
     return () => {
       clearTimeout(timerId);
