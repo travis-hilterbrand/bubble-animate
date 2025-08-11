@@ -29,11 +29,9 @@ const Container = styled.div<{ $animate: boolean }>`
     @keyframes fadeInBubble {
       from {
         opacity: 0;
-        transform: translateY(40px);
       }
       to {
         opacity: 1;
-        transform: translateY(0px);
       }
     }
     @keyframes fadeOutBubble {

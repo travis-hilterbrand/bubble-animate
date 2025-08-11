@@ -61,10 +61,11 @@ export const App = () => {
     setId((prev) => prev + 1);
   };
   const removeMessageStart = (id: string) => {
+    console.info(`removeMessageStart(${id})`);
     setFadeOutId(id);
   };
   const removeMessageEnd = (ids: string[]) => {
-    console.info(`remove message(${id})`);
+    console.info(`removeMessageEnd(${ids})`);
     const newMessages = chatMessages.filter((item) => !ids.includes(item.id));
     setChatMessages(newMessages);
   };
@@ -75,8 +76,12 @@ export const App = () => {
       const messagesToRemove = chatMessages
         .slice(0, index + 1)
         .map((item) => item.id);
-      console.info(`remove multiple`, messagesToRemove);
-      removeMessageEnd(messagesToRemove);
+      if (messagesToRemove.length > 1) {
+        console.info(`remove multiple`, messagesToRemove);
+        removeMessageEnd(messagesToRemove);
+      } else {
+        removeMessageStart(messagesToRemove[0]);
+      }
     }
     resetShowTime();
   };
@@ -95,7 +100,7 @@ export const App = () => {
     };
   });
 
-  const [jiggle, setJiggle] = useState(true);
+  const [jiggle, setJiggle] = useState(false);
 
   return (
     <div>
