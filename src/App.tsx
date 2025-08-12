@@ -112,7 +112,6 @@ export const App = () => {
         <div></div>
         <Right>
           <ChatBubble
-            allowFadeIn={false}
             animate={false}
             fadeOut={false}
             chatMessage={{ id: "test", message: "My chat bubble" }}
