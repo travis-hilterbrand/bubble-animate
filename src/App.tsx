@@ -6,6 +6,10 @@ import { randomString } from "./random";
 import { ChatBubble } from "./ChatBubble";
 import styled from "styled-components";
 
+const INITIAL_MESSAGES: ChatMessage[] = [
+  { id: "1", message: randomString(64) },
+];
+
 const Panel = styled.div`
   display: grid;
   grid-template-columns: 50% 50%;
@@ -40,20 +44,27 @@ const Right = styled.div`
 export const App = () => {
   const [id, setId] = useState(2);
   // order is oldest to newest
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    { id: "1", message: randomString(64) },
-  ]);
+  const [chatMessages, setChatMessages] =
+    useState<ChatMessage[]>(INITIAL_MESSAGES);
+  const [messageAdded, setMessageAdded] = useState(false);
 
   const showTime = useRef(new Date());
   const resetShowTime = () => {
     showTime.current = new Date();
   };
 
+  const timeoutId = useRef<number | undefined>(undefined);
   const [fadeOutMessages, setFadeOutMessages] = useState<string[]>([]);
   const addNewMessage = () => {
     if (!chatMessages.length) {
       resetShowTime();
     }
+
+    setMessageAdded(true);
+    window.clearTimeout(timeoutId.current);
+    timeoutId.current = window.setTimeout(() => {
+      setMessageAdded(false);
+    }, 400);
 
     setChatMessages((prev) => {
       const newMessages = [...prev, { id: `${id}`, message: randomString(64) }];
@@ -101,6 +112,7 @@ export const App = () => {
         <div></div>
         <Right>
           <ChatBubble
+            allowFadeIn={false}
             animate={false}
             fadeOut={false}
             chatMessage={{ id: "test", message: "My chat bubble" }}
@@ -113,6 +125,7 @@ export const App = () => {
       <ChatWall
         chatMessages={[...chatMessages].reverse()}
         fadeOutId={fadeOutMessages[0]}
+        messageAdded={messageAdded}
         onClose={handleCloseClick}
         onFadeOutComplete={(id) => {
           const newFadeOutMessages = [...fadeOutMessages];

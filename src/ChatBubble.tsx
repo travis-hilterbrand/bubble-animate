@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ChatMessage } from "./types";
 
 const FADE_OUT_TIME = 300;
-const FADE_IN = "fadeInBubble 500ms cubic-bezier(0.4, 2, 0.6, 1) forwards";
+const FADE_IN = "fadeInBubble 350ms cubic-bezier(0.4, 2, 0.6, 1) forwards";
 const FADE_OUT = `fadeOutBubble ${FADE_OUT_TIME}ms linear forwards`;
 
 const Container = styled.div<{ $animate: boolean }>`
@@ -45,6 +45,7 @@ const Container = styled.div<{ $animate: boolean }>`
 `;
 
 export type ChatBubbleProps = {
+  allowFadeIn: boolean;
   animate: boolean;
   chatMessage: ChatMessage;
   fadeOut: boolean;
@@ -52,22 +53,30 @@ export type ChatBubbleProps = {
   onFadeOutComplete: (id: string) => void;
 };
 export const ChatBubble = (props: ChatBubbleProps) => {
-  const { animate, chatMessage, fadeOut, onClose, onFadeOutComplete } = props;
+  const {
+    allowFadeIn,
+    animate,
+    chatMessage,
+    fadeOut,
+    onClose,
+    onFadeOutComplete,
+  } = props;
 
   const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    setVisible(true);
-  }, []);
-
   const animation: string = useMemo(() => {
+    console.info("animation", { allowFadeIn, animate });
     if (animate) {
       if (fadeOut) {
         return FADE_OUT;
+      } else if (allowFadeIn) {
+        return FADE_IN;
       }
-      return FADE_IN;
     }
     return "";
-  }, [animate, fadeOut]);
+  }, [allowFadeIn, animate, fadeOut]);
+  useEffect(() => {
+    setVisible(true);
+  }, []);
 
   const [id] = useState(chatMessage.id);
   useEffect(() => {
