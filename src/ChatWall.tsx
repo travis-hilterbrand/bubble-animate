@@ -33,10 +33,12 @@ export type ChatWallProps = Pick<
 > & {
   chatMessages: ChatMessage[];
   messageAdded: boolean;
+  fadeOutFast: boolean;
   fadeOutId: string;
 };
 export const ChatWall = ({
   chatMessages,
+  fadeOutFast,
   fadeOutId,
   messageAdded,
   ...rest
@@ -60,6 +62,7 @@ export const ChatWall = ({
           chatMessage={item}
           fadeIn={now - item.addTime < 500}
           fadeOut={item.id === fadeOutId}
+          fadeOutFast={fadeOutFast}
           {...rest}
         />
       ))}

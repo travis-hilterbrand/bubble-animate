@@ -2,9 +2,12 @@ import styled from "styled-components";
 import { useEffect, useMemo, useState } from "react";
 import type { ChatMessage } from "./types";
 
-const FADE_OUT_TIME = 300;
+const FADE_OUT_TIME_FAST = 150;
+const FADE_OUT_TIME_SLOW = 300;
 const FADE_IN = "fadeInBubble 500ms cubic-bezier(0.4, 1, 0.6, 1) forwards";
-const FADE_OUT = `fadeOutBubble ${FADE_OUT_TIME}ms linear forwards`;
+
+const FadeOutAnimation = (fadeOutTime: number) =>
+  `fadeOutBubble ${fadeOutTime}ms linear forwards`;
 
 const Container = styled.div<{ $animate: boolean }>`
   box-shadow: 0px 6px 24px rgba(16, 16, 23, 0.08);
@@ -49,12 +52,20 @@ export type ChatBubbleProps = {
   chatMessage: ChatMessage;
   fadeIn: boolean;
   fadeOut: boolean;
+  fadeOutFast: boolean;
   onClose: (id: string) => void;
   onFadeOutComplete: (id: string) => void;
 };
 export const ChatBubble = (props: ChatBubbleProps) => {
-  const { animate, chatMessage, fadeIn, fadeOut, onClose, onFadeOutComplete } =
-    props;
+  const {
+    animate,
+    chatMessage,
+    fadeIn,
+    fadeOut,
+    fadeOutFast,
+    onClose,
+    onFadeOutComplete,
+  } = props;
 
   const [visible, setVisible] = useState(false);
   const animation: string = useMemo(() => {
@@ -63,11 +74,13 @@ export const ChatBubble = (props: ChatBubbleProps) => {
         return FADE_IN;
       }
       if (fadeOut) {
-        return FADE_OUT;
+        return FadeOutAnimation(
+          fadeOutFast ? FADE_OUT_TIME_FAST : FADE_OUT_TIME_SLOW
+        );
       }
     }
     return "";
-  }, [animate, fadeIn, fadeOut]);
+  }, [animate, fadeIn, fadeOut, fadeOutFast]);
   useEffect(() => {
     setVisible(true);
   }, []);
@@ -76,14 +89,17 @@ export const ChatBubble = (props: ChatBubbleProps) => {
   useEffect(() => {
     let timerId: number | undefined;
     if (fadeOut) {
-      timerId = setTimeout(() => {
-        onFadeOutComplete(id);
-      }, FADE_OUT_TIME);
+      timerId = setTimeout(
+        () => {
+          onFadeOutComplete(id);
+        },
+        fadeOutFast ? FADE_OUT_TIME_FAST : FADE_OUT_TIME_SLOW
+      );
     }
     return () => {
       clearTimeout(timerId);
     };
-  }, [fadeOut, id, onFadeOutComplete]);
+  }, [fadeOut, fadeOutFast, id, onFadeOutComplete]);
 
   return (
     <Container

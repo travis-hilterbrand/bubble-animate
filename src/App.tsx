@@ -118,6 +118,7 @@ export const App = () => {
             animate={false}
             fadeIn={false}
             fadeOut={false}
+            fadeOutFast={false}
             chatMessage={{
               id: "test",
               message: "My chat bubble",
@@ -132,6 +133,7 @@ export const App = () => {
       <ChatWall
         chatMessages={[...chatMessages].reverse()}
         fadeOutId={fadeOutMessages[0]}
+        fadeOutFast={fadeOutMessages.length > 1}
         messageAdded={messageAdded}
         onClose={handleCloseClick}
         onFadeOutComplete={(id) => {
