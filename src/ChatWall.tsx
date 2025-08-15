@@ -3,7 +3,6 @@ import styled from "styled-components";
 import type { ChatMessage } from "./types";
 import { ChatBubble, type ChatBubbleProps } from "./ChatBubble";
 
-const FADE_IN = "fadeInWall 350ms linear";
 const MOVE_IN = "translateWall 0.4s cubic-bezier(.23,1.01,.32,1) both";
 
 const Container = styled.div`
@@ -18,14 +17,6 @@ const Container = styled.div`
   align-items: flex-end;
   gap: 8px;
 
-  @keyframes fadeInWall {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
   @keyframes translateWall {
     from {
       transform: translateY(40px);
@@ -52,13 +43,13 @@ export const ChatWall = ({
 }: ChatWallProps) => {
   const animation = useMemo(() => {
     console.info(`change animation(${messageAdded},${chatMessages.length})`);
-    if (chatMessages.length === 1 && messageAdded) {
-      return [FADE_IN, MOVE_IN].join(",");
-    } else if (messageAdded) {
+    if (messageAdded) {
       return MOVE_IN;
     }
     return "";
   }, [chatMessages, messageAdded]);
+
+  const now = Date.now();
 
   return (
     <Container data-component={"ChatWall"} style={{ animation }}>
@@ -67,6 +58,7 @@ export const ChatWall = ({
           key={item.id}
           animate
           chatMessage={item}
+          fadeIn={now - item.addTime < 500}
           fadeOut={item.id === fadeOutId}
           {...rest}
         />

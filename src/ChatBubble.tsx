@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ChatMessage } from "./types";
 
 const FADE_OUT_TIME = 300;
+const FADE_IN = "fadeInBubble 500ms cubic-bezier(0.4, 1, 0.6, 1) forwards";
 const FADE_OUT = `fadeOutBubble ${FADE_OUT_TIME}ms linear forwards`;
 
 const Container = styled.div<{ $animate: boolean }>`
@@ -46,22 +47,27 @@ const Container = styled.div<{ $animate: boolean }>`
 export type ChatBubbleProps = {
   animate: boolean;
   chatMessage: ChatMessage;
+  fadeIn: boolean;
   fadeOut: boolean;
   onClose: (id: string) => void;
   onFadeOutComplete: (id: string) => void;
 };
 export const ChatBubble = (props: ChatBubbleProps) => {
-  const { animate, chatMessage, fadeOut, onClose, onFadeOutComplete } = props;
+  const { animate, chatMessage, fadeIn, fadeOut, onClose, onFadeOutComplete } =
+    props;
 
   const [visible, setVisible] = useState(false);
   const animation: string = useMemo(() => {
     if (animate) {
+      if (fadeIn) {
+        return FADE_IN;
+      }
       if (fadeOut) {
         return FADE_OUT;
       }
     }
     return "";
-  }, [animate, fadeOut]);
+  }, [animate, fadeIn, fadeOut]);
   useEffect(() => {
     setVisible(true);
   }, []);

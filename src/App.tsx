@@ -7,7 +7,7 @@ import { ChatBubble } from "./ChatBubble";
 import styled from "styled-components";
 
 const INITIAL_MESSAGES: ChatMessage[] = [
-  { id: "1", message: randomString(64) },
+  { id: "1", message: randomString(64), addTime: Date.now() },
 ];
 
 const Panel = styled.div`
@@ -67,7 +67,10 @@ export const App = () => {
     }, 400);
 
     setChatMessages((prev) => {
-      const newMessages = [...prev, { id: `${id}`, message: randomString(64) }];
+      const newMessages = [
+        ...prev,
+        { id: `${id}`, message: randomString(64), addTime: Date.now() },
+      ];
       return newMessages.slice(-4);
     });
     setId((prev) => prev + 1);
@@ -113,8 +116,13 @@ export const App = () => {
         <Right>
           <ChatBubble
             animate={false}
+            fadeIn={false}
             fadeOut={false}
-            chatMessage={{ id: "test", message: "My chat bubble" }}
+            chatMessage={{
+              id: "test",
+              message: "My chat bubble",
+              addTime: Date.now(),
+            }}
             onClose={() => {}}
             onFadeOutComplete={() => {}}
           />
